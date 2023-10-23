@@ -1,0 +1,39 @@
+version: '1.0'
+
+networks:
+  my_network:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    networks:
+      - my_network
+    ports:
+      - '4200:4200'
+    depends_on:
+      - database
+
+  database:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    networks:
+      - my_network
+    environment:
+      - POSTGRES_USER=${DATABASE}
+      - POSTGRES_PASSWORD=${USERNAME}
+      - POSTGRES_DB=${PASSWORD}
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    networks:
+      - my_network
+    ports:
+      - '3000:3000'
+    depends_on:
+      - database
